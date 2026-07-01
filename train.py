@@ -3,7 +3,6 @@
 import sys
 import logging
 import os
-import sys
 from src.config import SEASON_RANGE, JOLPICA_BASE_URL, MODEL_PATH
 from src.api_client import JolpicaClient
 from src.data_processor import build_historical_dataset, engineer_features
