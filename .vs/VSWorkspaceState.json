@@ -1,8 +1,9 @@
 {
   "ExpandedNodes": [
     "",
+    "\\assets",
     "\\src"
   ],
-  "SelectedNode": "\\run_dashboard.bat",
+  "SelectedNode": "\\callbacks.py",
   "PreviewInSolutionExplorer": false
 }

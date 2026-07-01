@@ -150,25 +150,44 @@ def register_callbacks(app):
         if not gp or not round_num:
             return fig_prob, fig_feat, html.Div("Please select a Grand Prix and Round.", style={'color': '#FF1801'})
 
-        try:
+       try:
             historical_df = build_historical_dataset(jolpica_client, SEASON_RANGE)
             latest_season = historical_df['season'].max()
-            active_drivers = historical_df[historical_df['season'] == latest_season]['driver_id'].dropna().unique()
-            circuit_id = gp.lower().replace(" ", "_").replace("grand_prix", "").strip("_")
+            
+            # Filter to current active drivers
+            latest_season_df = historical_df[historical_df['season'] == latest_season]
+            if latest_season_df.empty:
+                 latest_season_df = historical_df[historical_df['season'] == (latest_season - 1)]
+
+            active_drivers = latest_season_df['driver_id'].dropna().unique()
+            
+            # Map GP accurately to Jolpica's circuit ID format
+            target_race = latest_season_df[latest_season_df['round'] == int(round_num)]
+            if not target_race.empty:
+                circuit_id = target_race['circuit_id'].iloc[0]
+            else:
+                circuit_id = gp.split(" ")[0].lower() # Fallback for un-run races
+            
+            # Calculate a realistic synthetic grid position based on average finish this season
+            driver_stats = latest_season_df.groupby('driver_id')['position'].mean().sort_values()
             
             probs = []
             driver_names = []
             
-            for i, driver_id in enumerate(active_drivers):
-                # Assume starting position based on rough historical grid rank logic
-                grid_pos = (i % 20) + 1 
+            for driver_id in active_drivers:
+                # Estimate starting position: rank based on real average finish this season
+                try:
+                    grid_pos = driver_stats.index.get_loc(driver_id) + 1 
+                except KeyError:
+                    grid_pos = 10 # Default midfield if data is missing
+                    
                 feat_row = prepare_prediction_input(driver_id, circuit_id, grid_pos, historical_df)
                 prob = predictor.predict_proba(feat_row)
                 
                 probs.append(prob * 100)
                 driver_names.append(str(driver_id).replace("_", " ").title())
 
-            # Sort for horizontal bar chart (lowest to highest so highest is on top)
+            # Sort for horizontal bar chart
             sorted_data = sorted(zip(probs, driver_names), reverse=False) 
             y_drivers = [d[1] for d in sorted_data]
             x_probs = [d[0] for d in sorted_data]
@@ -189,7 +208,3 @@ def register_callbacks(app):
             ])
             
             return fig_prob, fig_feat, metrics_div
-            
-        except Exception as e:
-            logger.error(f"Prediction failed: {e}")
-            return fig_prob, fig_feat, html.Div(f"Error: {e}", style={'color': '#FF1801'})

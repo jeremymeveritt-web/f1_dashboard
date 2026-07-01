@@ -14,7 +14,7 @@ for directory in [CACHE_DIR, DATA_DIR, MODEL_DIR]:
 
 # API & Data Constants
 JOLPICA_BASE_URL = "https://api.jolpi.ca/ergast/f1"
-SEASON_RANGE = list(range(2018, 2026))
+SEASON_RANGE = list(range(2018, 2027))
 TARGET_CIRCUITS = ["monza", "spa", "silverstone", "monaco", "suzuka"]
 SESSION_TYPES = ['Q', 'R', 'FP1', 'FP2', 'FP3', 'S']
 

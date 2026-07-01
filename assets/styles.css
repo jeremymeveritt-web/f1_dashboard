@@ -68,3 +68,26 @@ h1, h2, h3, h4, .data-value {
     border-bottom: 1px solid #222;
     padding-bottom: 4px;
 }
+/* Fix Dash Dropdown text color for Dark Theme */
+.Select-control {
+    background-color: var(--card-bg) !important;
+    border-color: #333 !important;
+}
+.Select-value-label {
+    color: white !important;
+}
+.Select-menu-outer {
+    background-color: var(--card-bg) !important;
+    border: 1px solid #333 !important;
+}
+.Select-option {
+    background-color: var(--card-bg) !important;
+    color: white !important;
+}
+.Select-option.is-focused, .Select-option:hover {
+    background-color: var(--accent-cyan) !important;
+    color: black !important;
+}
+.Select-input > input {
+    color: white !important;
+}
